@@ -1,0 +1,43 @@
+var howOften = 2; //number often in seconds to rotate
+var current = 0; //start the counter at 0
+
+var items = [];
+    <% @site.banners.available_to_show.each_with_index do |banner, id| %>
+    items[<%= id %>] = {
+       'banner':  "<a class = 'banner-item' banner-id='<%= banner.id %>' href='<%= banner.target_url%>' target='<%= banner.target %>'><img alt='' src='<%= image_url(banner.image.url(:medium))%>' /></a>",
+       'id': '<%= banner.id %>'
+    };
+    <% end %>
+
+function rotater() {
+    if (items[current]) {
+        $("#banner-<%= @site.id %>").html(items[current]['banner']);
+
+        //increases number of showing
+        $.ajax({
+            url: "<%= incr_showing_url%>",
+            method: "POST",
+            data: {id: items[current]['id']}
+        }).done(function(res) {
+            if (res['success'] = true && res['show'] == 'no'){
+                items.splice(current, 1);
+            }
+        });
+    }
+    current = (current==items.length-1) ? 0 : current + 1;
+    setTimeout("rotater()",howOften*1000);
+}
+
+$(document).ready(function(){
+    $("#banners").append('<div id="banner-'+ <%= @site.id %> +'" style="width: 300px; height: 100px; margin: 0 auto; border: 1px solid green"></div>')
+
+    rotater();
+
+    $("#banner-<%= @site.id %>").on("click", ".banner-item", function(){
+        $.ajax({
+            url: "http://localhost:3000/incr_clicks",
+            method: "POST",
+            data: {id: $(this).attr("banner-id")}
+        });
+    });
+});
