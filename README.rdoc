@@ -1,0 +1,22 @@
+== README
+
+* Ruby version 2.2.0
+
+* Database creation
+
+  rake db:create
+
+* Database initialization
+
+  rake db:migrate
+  rake db:seed
+
+* How to run the test suite
+
+  You should create test database
+  Than run rspec
+
+
+Access to admin side:
+User: admin@example.com
+Password: password
